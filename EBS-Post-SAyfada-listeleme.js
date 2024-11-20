@@ -12,6 +12,19 @@ logContainer.style.padding = '10px';
 logContainer.style.zIndex = '9999';
 document.body.appendChild(logContainer);
 
+// Küçültme butonu
+const resizeButton = document.createElement('button');
+resizeButton.textContent = 'Küçült';
+resizeButton.style.position = 'absolute';
+resizeButton.style.top = '10px';
+resizeButton.style.right = '10px';
+resizeButton.style.padding = '5px';
+resizeButton.style.backgroundColor = '#FFD700';
+resizeButton.style.color = 'black';
+resizeButton.style.border = 'none';
+resizeButton.style.cursor = 'pointer';
+logContainer.appendChild(resizeButton);
+
 // Logları temizlemek için bir buton ekleyelim
 const clearButton = document.createElement('button');
 clearButton.textContent = 'Temizle';
@@ -145,5 +158,44 @@ toggleButton.addEventListener('click', () => {
     } else {
         logContainer.style.display = 'none';
         toggleButton.textContent = 'Göster';
+    }
+});
+
+// Sürüklenebilir logContainer
+let isDragging = false;
+let offsetX, offsetY;
+
+// Mouse ile sürükleme işlevi
+logContainer.addEventListener('mousedown', (event) => {
+    isDragging = true;
+    offsetX = event.clientX - logContainer.getBoundingClientRect().left;
+    offsetY = event.clientY - logContainer.getBoundingClientRect().top;
+    logContainer.style.cursor = 'move'; // Sürüklerken imleci değiştir
+});
+
+document.addEventListener('mousemove', (event) => {
+    if (isDragging) {
+        logContainer.style.left = `${event.clientX - offsetX}px`;
+        logContainer.style.top = `${event.clientY - offsetY}px`;
+    }
+});
+
+document.addEventListener('mouseup', () => {
+    isDragging = false;
+    logContainer.style.cursor = 'default'; // Sürükleme tamamlandığında imleci eski haline getir
+});
+
+// Küçültme butonunu işlevsel hale getirelim
+let isResized = false;
+
+resizeButton.addEventListener('click', () => {
+    if (!isResized) {
+        logContainer.style.height = '50px'; // Küçültme
+        resizeButton.textContent = 'Büyüt';
+        isResized = true;
+    } else {
+        logContainer.style.height = '200px'; // Eski haline döndürme
+        resizeButton.textContent = 'Küçült';
+        isResized = false;
     }
 });
