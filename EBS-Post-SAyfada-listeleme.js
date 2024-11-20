@@ -12,6 +12,48 @@ logContainer.style.padding = '10px';
 logContainer.style.zIndex = '9999';
 document.body.appendChild(logContainer);
 
+// Logları temizlemek için bir buton ekleyelim
+const clearButton = document.createElement('button');
+clearButton.textContent = 'Temizle';
+clearButton.style.position = 'fixed';
+clearButton.style.bottom = '220px';
+clearButton.style.left = '10px';
+clearButton.style.padding = '10px';
+clearButton.style.backgroundColor = '#f44336';
+clearButton.style.color = 'white';
+clearButton.style.border = 'none';
+clearButton.style.cursor = 'pointer';
+document.body.appendChild(clearButton);
+
+// Logları txt dosyasına indirmek için bir buton ekleyelim
+const downloadButton = document.createElement('button');
+downloadButton.textContent = 'Logları İndir';
+downloadButton.style.position = 'fixed';
+downloadButton.style.bottom = '220px';
+downloadButton.style.left = '100px';
+downloadButton.style.padding = '10px';
+downloadButton.style.backgroundColor = '#4CAF50';
+downloadButton.style.color = 'white';
+downloadButton.style.border = 'none';
+downloadButton.style.cursor = 'pointer';
+document.body.appendChild(downloadButton);
+
+// Gizle/Göster butonunu ekleyelim
+const toggleButton = document.createElement('button');
+toggleButton.textContent = 'Gizle';
+toggleButton.style.position = 'fixed';
+toggleButton.style.bottom = '220px';
+toggleButton.style.left = '200px';
+toggleButton.style.padding = '10px';
+toggleButton.style.backgroundColor = '#007BFF';
+toggleButton.style.color = 'white';
+toggleButton.style.border = 'none';
+toggleButton.style.cursor = 'pointer';
+document.body.appendChild(toggleButton);
+
+// Logları içeren array
+let logEntries = [];
+
 // XMLHttpRequest'i dinleme
 const originalXHROpen = XMLHttpRequest.prototype.open;
 XMLHttpRequest.prototype.open = function (method, url, async, user, password) {
@@ -71,6 +113,37 @@ window.fetch = async function (input, init) {
 function addLogToContainer(message) {
     const logEntry = document.createElement('div');
     logEntry.textContent = message;
+    logEntries.push(message); // Logları array'e ekle
     logContainer.appendChild(logEntry);
     logContainer.scrollTop = logContainer.scrollHeight; // Otomatik scroll
 }
+
+// Logları txt dosyasına indir
+downloadButton.addEventListener('click', () => {
+    const blob = new Blob([logEntries.join('\n')], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'logs.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url); // URL'yi serbest bırak
+});
+
+// Logları temizle
+clearButton.addEventListener('click', () => {
+    logContainer.innerHTML = ''; // Görünümü temizle
+    logEntries = []; // Array'i temizle
+});
+
+// Gizle/Göster butonunu işlevsel hale getirelim
+toggleButton.addEventListener('click', () => {
+    if (logContainer.style.display === 'none') {
+        logContainer.style.display = 'block';
+        toggleButton.textContent = 'Gizle';
+    } else {
+        logContainer.style.display = 'none';
+        toggleButton.textContent = 'Göster';
+    }
+});
